@@ -4,32 +4,32 @@
 class Stone
 {
 public:
-    enum TYPE{JIANG,SHUAI,BING,ZU,REDPAO,BLACKPAO,REDCHE,BLACKCHE,REDMA,BLACKMA,BLACKXIANG,REDXIANG,REDSHI,BLACKSHI};
     QString getSoneName();
     int getRow();
     int getCol();
     int getId();
     bool getIsDead();
-    bool getIsRed();
-
 
     void setRow(int x);
     void setCol(int y);
     void setIsDead(bool isdead);
-    void setIsRed(bool isred);
+
+public:
+    enum TYPE{JIANG,SHUAI,BING,ZU,REDPAO,BLACKPAO,REDCHE,BLACKCHE,REDMA,BLACKMA,BLACKXIANG,REDXIANG,REDSHI,BLACKSHI};
+    enum COLOR{RED=1,BLACK=2};
+public:
+    TYPE type ;
+    COLOR color ;
 
 private:
     int row;
     int col ;
     int id ;
     bool isdead;
-    bool isred ;
 
-    TYPE type ;
 public:
     Stone();
-    Stone(int row,int col,int id,bool isdead,bool isred,TYPE type);
-
+    Stone(int row,int col,int id,bool isdead, COLOR color,TYPE type);
 };
 
 #endif // STONE_H

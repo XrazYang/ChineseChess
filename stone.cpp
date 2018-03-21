@@ -4,12 +4,12 @@ Stone::Stone()
 {
 
 }
-Stone::Stone(int row, int col, int id, bool isdead, bool isred, TYPE type){
+Stone::Stone(int row, int col, int id, bool isdead, COLOR color, TYPE type){
     this->row = row ;
     this->col = col;
     this->id = id;
     this->isdead = isdead;
-    this->isred = isred;
+    this->color = color;
     this->type = type ;
 }
 
@@ -59,9 +59,6 @@ int Stone::getId(){
 bool Stone::getIsDead(){
     return this->isdead;
 }
-bool Stone::getIsRed(){
-    return this->isred;
-}
 
 void Stone::setRow(int x){
     this->row = x ;
@@ -71,7 +68,4 @@ void Stone::setCol(int y){
 }
 void Stone::setIsDead(bool isdead){
     this->isdead = isdead;
-}
-void Stone::setIsRed(bool isred){
-    this->isred = isred;
 }
