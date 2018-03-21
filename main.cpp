@@ -1,13 +1,11 @@
 #include <QApplication>
-#include <QLabel>
-#include <QDialog>
+#include"board.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    QDialog q;
-    QLabel label(&q);
-    label.setText("hello word !!!");
-    q.show();
+
+    Board Board;
+    Board.show();
     return a.exec();
 }
