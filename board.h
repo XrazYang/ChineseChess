@@ -34,6 +34,9 @@ private:
 private:
     void drawPostion(int x ,int y,int r,QPainter &pen);
     void initStone();
+
+    bool isEXistPieceInLine(int selectid,int row,int col);
+    bool isEXistPieceInPoint(int row ,int col);
 signals:
 
 public slots:

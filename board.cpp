@@ -2,6 +2,7 @@
 #include<QPainter>
 #include<QMouseEvent>
 #include<iostream>
+#include<QVector>
 
 Board::Board(QWidget *parent) : QWidget(parent)
 {
@@ -224,35 +225,34 @@ bool Board::isRegularMovement(int selectid, int row, int col, int killid){
     case Stone::SHUAI:{
         return isRegularMoveBoss(selectid,row,col,killid);
     }
-        //    case Stone::REDCHE:
-        //    case Stone::BLACKCHE:{
-        //        return isRegularMoveCHE(selectid,row,col,killid);
-        //    }
-        //    case Stone::REDMA:
-        //    case Stone::BLACKMA:{
-        //        return isRegularMoveMa(selectid,row,col,killid);
-        //    }
-        //    case Stone::REDXIANG:
-        //    case Stone::BLACKXIANG:{
-        //        return isRegularMoveXiang(selectid,row,col,killid);
-        //    }
-        //    case Stone::REDSHI:
-        //    case Stone::BLACKSHI:{
-        //        return isRegularMoveShi(selectid,row,col,killid);
-        //    }
-        //    case Stone::BING:
-        //    case Stone::ZU:{
-        //        return isRegularMoveSoldier(selectid,row,col,killid);
-        //    }
-        //    case Stone::REDPAO:
-        //    case Stone::BLACKPAO:{
-        //        return isRegularMovePao(selectid,row,col,killid);
-        //    }
-        //    default:
-        //        std::cout<<stone[selectid].getIsRed()<<std::endl ;
-        //        return false;
+    case Stone::REDCHE:
+    case Stone::BLACKCHE:{
+        return isRegularMoveCHE(selectid,row,col,killid);
     }
-    return true ;
+    case Stone::REDMA:
+    case Stone::BLACKMA:{
+        return isRegularMoveMa(selectid,row,col,killid);
+    }
+    case Stone::REDXIANG:
+    case Stone::BLACKXIANG:{
+        return isRegularMoveXiang(selectid,row,col,killid);
+    }
+    case Stone::REDSHI:
+    case Stone::BLACKSHI:{
+        return isRegularMoveShi(selectid,row,col,killid);
+    }
+    case Stone::BING:
+    case Stone::ZU:{
+        return isRegularMoveSoldier(selectid,row,col,killid);
+    }
+//    case Stone::REDPAO:
+//    case Stone::BLACKPAO:{
+//        return isRegularMovePao(selectid,row,col,killid);
+//    }
+//    default:
+//        return false;
+    }
+    //return true ;
 }
 
 bool Board::isRegularMoveBoss(int selectid ,int row,int col,int killid){
@@ -278,27 +278,174 @@ bool Board::isRegularMoveBoss(int selectid ,int row,int col,int killid){
     if(drow == d){
         for(int j = 0 ; j < 32 ; j++){
             if(stone[j].getRow() == row && (stone[j].type ==Stone::JIANG || stone[j].type == Stone::SHUAI)){
-                return false;
+                if(!isEXistPieceInLine(j,row,col)){
+                    return false ;
+                }
             }
         }
     }
     return true ;
 }
+
+bool Board::isRegularMoveShi(int selectid ,int row,int col,int killid){
+    const int x = abs(stone[selectid].getRow() - row);
+    const int y = abs(stone[selectid].getCol() - col);
+    if(stone[selectid].color == Stone::BLACK){
+        QVector<QPoint> vec;
+        vec.insert(0,QPoint(4*d,d));
+        vec.insert(1,QPoint(4*d,3*d));
+        vec.insert(2,QPoint(6*d,d));
+        vec.insert(3,QPoint(6*d,3*d));
+        vec.insert(4,QPoint(5*d,2*d));
+        for(QVector<QPoint>::const_iterator it = vec.begin() ; it != vec.end() ;++it){
+              if(it->x() == row && it->y() == col && x == d && y == d){
+                  return true ;
+              }
+        }
+        return false;
+    }else{
+        QVector<QPoint> vec;
+        vec.insert(0,QPoint(4*d,8*d));
+        vec.insert(1,QPoint(4*d,10*d));
+        vec.insert(2,QPoint(6*d,8*d));
+        vec.insert(3,QPoint(6*d,10*d));
+        vec.insert(4,QPoint(5*d,9*d));
+        for(QVector<QPoint>::const_iterator it = vec.begin() ; it != vec.end() ;++it){
+              if(it->x() == row && it->y() == col && x == d && y == d){
+                  return true ;
+              }
+        }
+        return false;
+    }
+}
+
 bool Board::isRegularMoveCHE(int selectid ,int row,int col,int killid){
-    return true ;
+    if(stone[selectid].getRow() == row || stone[selectid].getCol() == col){
+        if(!isEXistPieceInLine(selectid,row,col)){
+            return true;
+        }
+    }
+    return false ;
 }
 bool Board::isRegularMoveMa(int selectid ,int row,int col,int killid){
-    return true ;
+
+    int drow = abs(stone[selectid].getRow() - row);
+    int dcol = abs(stone[selectid].getCol() - col);
+    int x = 0 ;
+    int y = 0 ;
+    if((drow == d && dcol == 2*d) ||(drow == 2*d) && dcol == d ){
+        if(drow == d){
+            x = stone[selectid].getRow();
+            if(stone[selectid].getCol() > col){
+                y = stone[selectid].getCol() -d ;
+            }else{
+                y = stone[selectid].getCol() + d;
+            }
+        }
+        if(dcol == d){
+            y = stone[selectid].getCol();
+            if(stone[selectid].getRow() > row){
+                x = stone[selectid].getRow() -d ;
+            }else{
+                x = stone[selectid].getRow() + d;
+            }
+        }
+
+        if(!isEXistPieceInPoint(x,y)){
+            return true;
+        }
+    }
+    return false ;
 }
 bool Board::isRegularMoveXiang(int selectid ,int row,int col,int killid){
-    return true ;
-}
-bool Board::isRegularMoveShi(int selectid ,int row,int col,int killid){
-    return true ;
+    int drow = abs(stone[selectid].getRow() - row);
+    int dcol = abs(stone[selectid].getCol() - col);
+    int x = 0 ;
+    int y = 0 ;
+    if(drow == 2*d && dcol == 2*d){
+        if((stone[selectid].color == Stone::BLACK && col <= 5*d) || (stone[selectid].color == Stone::RED && col >= 6*d)){
+            if(stone[selectid].getRow() < row) x = stone[selectid].getRow() + d ;
+            if(stone[selectid].getRow() > row) x = stone[selectid].getRow() - d ;
+
+            if(stone[selectid].getCol() < col) y = stone[selectid].getCol() + d ;
+            if(stone[selectid].getCol() > col) y = stone[selectid].getCol() - d ;
+            if(!isEXistPieceInPoint(x,y)){
+                return true ;
+            }
+        }
+    }
+    return false ;
 }
 bool Board::isRegularMoveSoldier(int selectid ,int row,int col,int killid){
-    return true ;
+    if(stone[selectid].color == Stone::RED){
+        if(stone[selectid].getCol() >= 6*d ){
+            if(row == stone[selectid].getRow() && stone[selectid].getCol() - col == d){
+                return true ;
+            }
+        }else{
+            if(row == stone[selectid].getRow() && stone[selectid].getCol() - col == d){
+                return true ;
+            }
+            if(col == stone[selectid].getCol() && abs(stone[selectid].getRow() - row) == d){
+                return true ;
+            }
+        }
+    }
+    if(stone[selectid].color == Stone::BLACK){
+        if(stone[selectid].getCol() <= 5*d ){
+            if(row == stone[selectid].getRow() &&  col - stone[selectid].getCol()  == d){
+                return true ;
+            }
+        }else{
+            if(row == stone[selectid].getRow() && col - stone[selectid].getCol()  == d){
+                return true ;
+            }
+            if(col == stone[selectid].getCol() && abs(stone[selectid].getRow() - row) == d){
+                return true ;
+            }
+        }
+    }
+    return false ;
 }
 bool Board::isRegularMovePao(int selectid ,int row,int col,int killid){
     return true ;
+}
+
+bool Board::isEXistPieceInLine(int selectid, int row, int col){
+    int i = 0 ;
+    int j = 0;
+    int size = 0 ;
+
+    if(stone[selectid].getRow() == row){
+        i = (std::min(stone[selectid].getCol(),col)) / d + 1;
+        size =( std::max(stone[selectid].getCol(),col)) /d;
+        for(  ; i < size ; i++){
+            for(j = 0 ; j < 32 ; j++){
+                if( stone[j].getRow() == row && stone[j].getCol() == i *d ){
+                    return true ;
+                }
+            }
+        }
+        return false ;
+    }else if(stone[selectid].getCol() == col){
+        i = (std::min(stone[selectid].getRow(),row)) / d + 1;
+        size = (std::max(stone[selectid].getRow(),row)) / d;
+        for(  ; i < size ; i++){
+            for(j = 0 ; j < 32 ; j++){
+                if(stone[j].getRow() == i*d && stone[j].getCol() == col ){
+                    return true ;
+                }
+            }
+        }
+        return false ;
+    }
+    return false ;
+}
+bool Board::isEXistPieceInPoint(int row, int col){
+    for(int j = 0 ; j < 32 ; j++){
+        if(stone[j].getRow() == row && stone[j].getCol() == col){
+            return true ;
+        }
+    }
+    return false ;
 }
