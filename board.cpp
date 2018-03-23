@@ -3,6 +3,7 @@
 #include<QMouseEvent>
 #include<iostream>
 #include<QVector>
+#include<QMessageBox>
 
 Board::Board(QWidget *parent) : QWidget(parent)
 {
@@ -186,6 +187,7 @@ void Board::mouseReleaseEvent(QMouseEvent *ev){
                         stone[clicked].setIsDead(true);
                     }
                 }
+                restartGame();
                 selected = -1;
                 bRedTurn = !bRedTurn;
                 update();
@@ -245,12 +247,12 @@ bool Board::isRegularMovement(int selectid, int row, int col, int killid){
     case Stone::ZU:{
         return isRegularMoveSoldier(selectid,row,col,killid);
     }
-//    case Stone::REDPAO:
-//    case Stone::BLACKPAO:{
-//        return isRegularMovePao(selectid,row,col,killid);
-//    }
-//    default:
-//        return false;
+    case Stone::REDPAO:
+    case Stone::BLACKPAO:{
+        return isRegularMovePao(selectid,row,col,killid);
+    }
+    default:
+        return false;
     }
     //return true ;
 }
@@ -408,7 +410,19 @@ bool Board::isRegularMoveSoldier(int selectid ,int row,int col,int killid){
     return false ;
 }
 bool Board::isRegularMovePao(int selectid ,int row,int col,int killid){
-    return true ;
+
+    if(stone[selectid].getRow() == row || stone[selectid].getCol() == col){
+        if(killid == -1){
+            if(!isEXistPieceInLine(selectid,row,col)){
+                return true ;
+            }
+        }else {
+            if(countPieceInLine(selectid,row,col) == 1){
+                return true ;
+            }
+        }
+    }
+    return false ;
 }
 
 bool Board::isEXistPieceInLine(int selectid, int row, int col){
@@ -421,7 +435,7 @@ bool Board::isEXistPieceInLine(int selectid, int row, int col){
         size =( std::max(stone[selectid].getCol(),col)) /d;
         for(  ; i < size ; i++){
             for(j = 0 ; j < 32 ; j++){
-                if( stone[j].getRow() == row && stone[j].getCol() == i *d ){
+                if( stone[j].getRow() == row && stone[j].getCol() == i *d && stone[j].getIsDead() == false ){
                     return true ;
                 }
             }
@@ -432,7 +446,7 @@ bool Board::isEXistPieceInLine(int selectid, int row, int col){
         size = (std::max(stone[selectid].getRow(),row)) / d;
         for(  ; i < size ; i++){
             for(j = 0 ; j < 32 ; j++){
-                if(stone[j].getRow() == i*d && stone[j].getCol() == col ){
+                if(stone[j].getRow() == i*d && stone[j].getCol() == col && stone[j].getIsDead() == false ){
                     return true ;
                 }
             }
@@ -441,11 +455,64 @@ bool Board::isEXistPieceInLine(int selectid, int row, int col){
     }
     return false ;
 }
+int Board::countPieceInLine(int selectid, int row, int col){
+    int i = 0 ;
+    int j = 0;
+    int size = 0 ;
+    int count = 0 ;
+
+    if(stone[selectid].getRow() == row){
+        i = (std::min(stone[selectid].getCol(),col)) / d + 1;
+        size =( std::max(stone[selectid].getCol(),col)) /d;
+        for(  ; i < size ; i++){
+            for(j = 0 ; j < 32 ; j++){
+                if( stone[j].getRow() == row && stone[j].getCol() == i *d && stone[j].getIsDead() == false){
+                    count++;
+                }
+            }
+        }
+    }else if(stone[selectid].getCol() == col){
+        i = (std::min(stone[selectid].getRow(),row)) / d + 1;
+        size = (std::max(stone[selectid].getRow(),row)) / d;
+        for(  ; i < size ; i++){
+            for(j = 0 ; j < 32 ; j++){
+                if(stone[j].getRow() == i*d && stone[j].getCol() == col && stone[j].getIsDead() == false ){
+                    count++;
+                }
+            }
+        }
+    }
+    std::cout<<count<<std::endl ;
+    return count ;
+}
 bool Board::isEXistPieceInPoint(int row, int col){
     for(int j = 0 ; j < 32 ; j++){
-        if(stone[j].getRow() == row && stone[j].getCol() == col){
+        if(stone[j].getRow() == row && stone[j].getCol() == col && stone[j].getIsDead() == false){
             return true ;
         }
     }
     return false ;
+}
+int Board::whoWinTheGame(){
+    if(stone[20].getIsDead() == true){
+        return Stone::RED;
+    }
+    if(stone[4].getIsDead() == true){
+        return Stone::BLACK ;
+    }
+    return 0 ;
+}
+void Board::restartGame(){
+    if(Stone::BLACK == whoWinTheGame()){
+        update();
+        QMessageBox::about(this,QString("比赛输赢"),QString("黑方获胜"));
+        initStone();
+        update();
+    }
+    if(Stone::RED == whoWinTheGame()){
+        update();
+        QMessageBox::about(this,QString("比赛输赢"),QString("红方获胜"));
+        initStone();
+        update();
+    }
 }

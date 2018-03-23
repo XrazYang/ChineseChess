@@ -25,6 +25,8 @@ public:
     bool isRegularMoveShi(int selectid ,int row,int col,int killid);
     bool isRegularMoveSoldier(int selectid ,int row,int col,int killid);
     bool isRegularMovePao(int selectid ,int row,int col,int killid);
+    int whoWinTheGame();
+    void restartGame();
 
 private:
     Stone stone[32];
@@ -36,6 +38,7 @@ private:
     void initStone();
 
     bool isEXistPieceInLine(int selectid,int row,int col);
+    int countPieceInLine(int selectid,int row,int col);
     bool isEXistPieceInPoint(int row ,int col);
 signals:
 
