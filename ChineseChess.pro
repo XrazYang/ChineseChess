@@ -23,8 +23,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # Input
 SOURCES += main.cpp \
     board.cpp \
-    stone.cpp
+    stone.cpp \
+    multigame.cpp \
+    step.cpp
 
 HEADERS += \
     board.h \
-    stone.h
+    stone.h \
+    multigame.h \
+    step.h
