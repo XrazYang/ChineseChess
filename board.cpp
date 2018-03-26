@@ -9,6 +9,7 @@ Board::Board(QWidget *parent) : QWidget(parent)
 {
     selected = -1 ;
     d = 40 ;
+    setMinimumSize(d*15, d*12);
     bRedTurn = true ; //red first
     initStone();
     this->setWindowTitle(QString("中国象棋"));
@@ -155,46 +156,7 @@ void Board::paintEvent(QPaintEvent *){
         drawStone(i,pen);
     }
 }
-void Board::mouseReleaseEvent(QMouseEvent *ev){
-    int clicked = -1 ;
-    int i = 0 ;
-    QPoint pt = ev->pos();
-    getRowCol(pt);
-    if(pt.x() != 0 && pt.y() != 0){
-        for(i = 0 ; i < 32 ; i++){
-            if(stone[i].getRow() == pt.x() && stone[i].getCol() == pt.y() && stone[i].getIsDead() == false){
-                break;
-            }
-        }
 
-        if(i < 32){
-            clicked = i ;
-        }
-        if(selected == -1){
-            if(clicked != -1){
-                if((bRedTurn == true && stone[clicked].color == Stone::RED) ||(bRedTurn == false && stone[clicked].color == Stone::BLACK) ){
-                    selected = clicked;
-                    update();
-                }
-            }
-
-        }else{
-            if(isRegularMovement(selected,pt.x(),pt.y(),clicked)){
-                if(selected != clicked){
-                    stone[selected].setRow(pt.x());
-                    stone[selected].setCol(pt.y());
-                    if(clicked != -1){
-                        stone[clicked].setIsDead(true);
-                    }
-                }
-                restartGame();
-                selected = -1;
-                bRedTurn = !bRedTurn;
-                update();
-            }
-        }
-    }
-}
 QPoint& Board::getRowCol(QPoint &pen){
     int r = d/2 ;
     int x = pen.x();
@@ -225,27 +187,27 @@ bool Board::isRegularMovement(int selectid, int row, int col, int killid){
     switch(stone[selectid].type){
     case Stone::JIANG:
     case Stone::SHUAI:{
-        return isRegularMoveBoss(selectid,row,col,killid);
+        return isRegularMoveBoss(selectid,row,col);
     }
     case Stone::REDCHE:
     case Stone::BLACKCHE:{
-        return isRegularMoveCHE(selectid,row,col,killid);
+        return isRegularMoveCHE(selectid,row,col);
     }
     case Stone::REDMA:
     case Stone::BLACKMA:{
-        return isRegularMoveMa(selectid,row,col,killid);
+        return isRegularMoveMa(selectid,row,col);
     }
     case Stone::REDXIANG:
     case Stone::BLACKXIANG:{
-        return isRegularMoveXiang(selectid,row,col,killid);
+        return isRegularMoveXiang(selectid,row,col);
     }
     case Stone::REDSHI:
     case Stone::BLACKSHI:{
-        return isRegularMoveShi(selectid,row,col,killid);
+        return isRegularMoveShi(selectid,row,col);
     }
     case Stone::BING:
     case Stone::ZU:{
-        return isRegularMoveSoldier(selectid,row,col,killid);
+        return isRegularMoveSoldier(selectid,row,col);
     }
     case Stone::REDPAO:
     case Stone::BLACKPAO:{
@@ -257,7 +219,7 @@ bool Board::isRegularMovement(int selectid, int row, int col, int killid){
     //return true ;
 }
 
-bool Board::isRegularMoveBoss(int selectid ,int row,int col,int killid){
+bool Board::isRegularMoveBoss(int selectid ,int row,int col){
     if(stone[selectid].color == Stone::BLACK){
         if(col < d || col > 3*d ){
             return false;
@@ -289,7 +251,7 @@ bool Board::isRegularMoveBoss(int selectid ,int row,int col,int killid){
     return true ;
 }
 
-bool Board::isRegularMoveShi(int selectid ,int row,int col,int killid){
+bool Board::isRegularMoveShi(int selectid ,int row,int col){
     const int x = abs(stone[selectid].getRow() - row);
     const int y = abs(stone[selectid].getCol() - col);
     if(stone[selectid].color == Stone::BLACK){
@@ -321,7 +283,7 @@ bool Board::isRegularMoveShi(int selectid ,int row,int col,int killid){
     }
 }
 
-bool Board::isRegularMoveCHE(int selectid ,int row,int col,int killid){
+bool Board::isRegularMoveCHE(int selectid ,int row,int col){
     if(stone[selectid].getRow() == row || stone[selectid].getCol() == col){
         if(!isEXistPieceInLine(selectid,row,col)){
             return true;
@@ -329,13 +291,13 @@ bool Board::isRegularMoveCHE(int selectid ,int row,int col,int killid){
     }
     return false ;
 }
-bool Board::isRegularMoveMa(int selectid ,int row,int col,int killid){
+bool Board::isRegularMoveMa(int selectid ,int row,int col){
 
     int drow = abs(stone[selectid].getRow() - row);
     int dcol = abs(stone[selectid].getCol() - col);
     int x = 0 ;
     int y = 0 ;
-    if((drow == d && dcol == 2*d) ||(drow == 2*d) && dcol == d ){
+    if((drow == d && dcol == 2*d) ||((drow == 2*d) && dcol == d )){
         if(drow == d){
             x = stone[selectid].getRow();
             if(stone[selectid].getCol() > col){
@@ -359,7 +321,7 @@ bool Board::isRegularMoveMa(int selectid ,int row,int col,int killid){
     }
     return false ;
 }
-bool Board::isRegularMoveXiang(int selectid ,int row,int col,int killid){
+bool Board::isRegularMoveXiang(int selectid ,int row,int col){
     int drow = abs(stone[selectid].getRow() - row);
     int dcol = abs(stone[selectid].getCol() - col);
     int x = 0 ;
@@ -378,7 +340,7 @@ bool Board::isRegularMoveXiang(int selectid ,int row,int col,int killid){
     }
     return false ;
 }
-bool Board::isRegularMoveSoldier(int selectid ,int row,int col,int killid){
+bool Board::isRegularMoveSoldier(int selectid ,int row,int col){
     if(stone[selectid].color == Stone::RED){
         if(stone[selectid].getCol() >= 6*d ){
             if(row == stone[selectid].getRow() && stone[selectid].getCol() - col == d){
@@ -482,7 +444,6 @@ int Board::countPieceInLine(int selectid, int row, int col){
             }
         }
     }
-    std::cout<<count<<std::endl ;
     return count ;
 }
 bool Board::isEXistPieceInPoint(int row, int col){
@@ -515,4 +476,109 @@ void Board::restartGame(){
         initStone();
         update();
     }
+}
+
+void Board::reliveStone(int id){
+    if(id != -1) {
+        stone[id].setIsDead(false);
+    }
+}
+
+void Board::back(Step *step){
+    reliveStone(step->_killid);
+    moveStone(step->_moveid, step->_rowFrom, step->_colFrom);
+}
+
+void Board::backOne(){
+    if(!steps.isEmpty()){
+        Step* step = this->steps.last();
+        steps.removeLast();
+        back(step);
+        update();
+        delete step;
+    }
+}
+
+void Board::back()
+{
+    backOne();
+}
+
+void Board::slotBack()
+{
+    back();
+}
+
+void Board::click(QPoint pt){
+    getRowCol(pt);
+    if(pt.x() != 0 && pt.y() != 0){
+        int id = getStoneId(pt.x(), pt.y());
+        click(id, pt.x(), pt.y());
+    }
+}
+
+int Board::getStoneId(int row, int col){
+    for(int i = 0 ; i < 32 ; i++){
+        if(stone[i].getRow() == row && stone[i].getCol() == col && stone[i].getIsDead() == false){
+            return i ;
+        }
+    }
+    return -1 ;
+}
+
+void Board::click(int id, int row, int col){
+    if(this->selected == -1)
+    {
+        trySelectStone(id);
+    }
+    else
+    {
+        tryMoveStone(id, row, col);
+    }
+}
+
+void Board::trySelectStone(int id){
+    if(id != -1){
+        if((bRedTurn == true && stone[id].color == Stone::RED) ||(bRedTurn == false && stone[id].color == Stone::BLACK) ){
+            selected = id;
+            update();
+        }
+    }
+}
+void Board::tryMoveStone(int killid, int row, int col){
+    if(isRegularMovement(selected,row,col,killid)){
+        moveStone(selected, killid, row, col);
+        restartGame();
+        selected = -1;
+        update();
+    }
+}
+void Board::moveStone(int moveid, int killid, int row, int col){
+    saveStep(moveid, killid, row, col);
+
+    killStone(killid);
+    moveStone(moveid, row, col);
+}
+
+void Board::saveStep(int moveid, int killid, int row, int col){
+    Step* step = new Step;
+    step->_colFrom = stone[moveid].getCol();
+    step->_colTo = col;
+    step->_rowFrom = stone[moveid].getRow();
+    step->_rowTo = row;
+    step->_moveid = moveid;
+    step->_killid = killid;
+    steps.push_back(step);
+}
+
+void Board::killStone(int id){
+    if(id==-1) return;
+    stone[id].setIsDead(true);
+}
+
+void Board::moveStone(int moveid, int row, int col){
+    stone[moveid].setRow(row);
+    stone[moveid].setCol(col);
+
+    bRedTurn = !bRedTurn;
 }
