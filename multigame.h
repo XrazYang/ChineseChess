@@ -10,7 +10,6 @@ class MultiGame : public Board
 public:
     explicit MultiGame(QWidget *parent = 0);
     ~MultiGame();
-    void mouseReleaseEvent(QMouseEvent *);
 private:
 
 

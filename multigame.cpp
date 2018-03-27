@@ -1,7 +1,6 @@
 #include "multigame.h"
 #include <QMouseEvent>
 #include <QPoint>
-#include<QHBoxLayout>
 #include<QPushButton>
 #include<QBoxLayout>
 MultiGame::MultiGame(QWidget *parent) : Board(parent){
@@ -17,6 +16,4 @@ MultiGame::~MultiGame()
 
 }
 
-void MultiGame::mouseReleaseEvent(QMouseEvent * ev){
-    click(ev->pos());
-}
+
