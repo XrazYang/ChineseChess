@@ -15,6 +15,7 @@ class Board : public QWidget
 public:
     explicit Board(QWidget *parent = nullptr);
     void paintEvent(QPaintEvent *);
+    void mouseReleaseEvent(QMouseEvent *);
 
     QPoint& getRowCol(QPoint &pen);
 
@@ -43,7 +44,7 @@ public:
     void moveStone(int moveid, int row, int col);
 
     //
-    void back();
+    virtual void back();
     void reliveStone(int id);
     void backOne();
     void back(Step *step);

@@ -105,6 +105,10 @@ void Board::drawStone(int id,QPainter &pen){
         }
     }
 }
+void Board::mouseReleaseEvent(QMouseEvent * ev){
+    click(ev->pos());
+}
+
 void Board::paintEvent(QPaintEvent *){
     QPainter pen(this);
 
