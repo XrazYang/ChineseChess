@@ -25,10 +25,12 @@ SOURCES += main.cpp \
     board.cpp \
     stone.cpp \
     multigame.cpp \
-    step.cpp
+    step.cpp \
+    singlegame.cpp
 
 HEADERS += \
     board.h \
     stone.h \
     multigame.h \
-    step.h
+    step.h \
+    singlegame.h
