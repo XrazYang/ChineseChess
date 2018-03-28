@@ -44,6 +44,7 @@ void Board::drawPostion(int x, int y,int r ,QPainter &pen){
     }
 }
 void Board::initStone(){
+    bRedTurn = true ; //red first
     //0-15 is red
     stone[0] = Stone(d,10*d,0,false,Stone::RED,Stone::REDCHE);
     stone[1] = Stone(2*d,10*d,1,false,Stone::RED,Stone::REDMA);
@@ -472,12 +473,14 @@ void Board::restartGame(){
         update();
         QMessageBox::about(this,QString("比赛输赢"),QString("黑方获胜"));
         initStone();
+        this->steps.clear();
         update();
     }
     if(Stone::RED == whoWinTheGame()){
         update();
         QMessageBox::about(this,QString("比赛输赢"),QString("红方获胜"));
         initStone();
+        this->steps.clear();
         update();
     }
 }
