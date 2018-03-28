@@ -5,7 +5,8 @@
 TEMPLATE = app
 TARGET = ChineseChess
 INCLUDEPATH += .
-QT       += core gui
+QT       += core gui network
+QT       += network
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 
@@ -26,11 +27,13 @@ SOURCES += main.cpp \
     stone.cpp \
     multigame.cpp \
     step.cpp \
-    singlegame.cpp
+    singlegame.cpp \
+    netgame.cpp
 
 HEADERS += \
     board.h \
     stone.h \
     multigame.h \
     step.h \
-    singlegame.h
+    singlegame.h \
+    netgame.h
