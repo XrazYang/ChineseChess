@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <iostream>
 SingleGame::SingleGame(QWidget *parent) : Board(parent){
+    this->level = 4 ;
     QBoxLayout * layout = new QBoxLayout(QBoxLayout::RightToLeft);
     QPushButton *back = new QPushButton("Back");
     layout->setContentsMargins(400,200,50,200);
@@ -47,7 +48,14 @@ void SingleGame::saveAllPossibleMove(int moveid, int killid, int row, int col, Q
 void SingleGame::getALLPossibleMove(QVector<Step *> & steps){
 
     //id [16,31] is black
-    for(int i = 16 ; i < 32 ; i++){
+    int min = 16 ;
+    int max = 32 ;
+    if(this->bRedTurn){
+         //id [0,15] is red
+        min = 0 ;
+        max = 16 ;
+    }
+    for(int i = min ; i < max ; i++){
         if(this->stone[i].getIsDead())continue;
         for(int row = 1 ; row <= 9 ; row ++){
             for(int col = 1 ; col <= 10 ; col ++){
@@ -72,7 +80,7 @@ void SingleGame::unfakeMove(Step *step){
 }
 int SingleGame::calScore(){
     //enum TYPE{JIANG,SHUAI,BING,ZU,REDPAO,BLACKPAO,REDCHE,BLACKCHE,REDMA,BLACKMA,BLACKXIANG,REDXIANG,REDSHI,BLACKSHI};
-    static int chessScore[] = {1000,1000,20,20,50,50,100,100,50,50,10,10,10,10};
+    static int chessScore[] = {15000,15000,200,200,501,501,1000,1000,499,499,100,100,100,100};
     int redScore = 0 ;
     int blackScore = 0 ;
 
@@ -89,6 +97,74 @@ int SingleGame::calScore(){
     }
     return (blackScore - redScore) ;
 }
+int SingleGame::getMinScore(int level , int curMaxScore){
+
+    if(level == 0) return this->calScore();
+
+    QVector<Step*>steps ;
+    //1.get all possible move steps
+    this->getALLPossibleMove(steps);
+    int minScore = std::numeric_limits<int>::max();
+    while (steps.count()) {
+        Step * step = steps.back() ;
+        steps.removeLast();
+
+        fakeMove(step);
+
+        //3.assess each step
+        int score = getMaxScore(level-1,minScore);
+        unfakeMove(step);
+
+        delete step;
+        if(score <= curMaxScore){
+             while (steps.count()) {
+                 Step * step = steps.back() ;
+                 steps.removeLast();
+                 delete step ;
+             }
+            return score;
+        }
+        if(score < minScore){
+            minScore = score ;
+        }
+
+    }
+    return minScore;
+}
+
+int SingleGame::getMaxScore(int level,int curMinScore){
+
+    if(level == 0) return this->calScore();
+
+    QVector<Step*>steps ;
+    //1.get all possible move steps
+    this->getALLPossibleMove(steps);
+    int maxScore = std::numeric_limits<int>::min();
+    while (steps.count()) {
+        Step * step = steps.back() ;
+        steps.removeLast();
+
+        fakeMove(step);
+        //3.assess each step
+        int score = getMinScore(level-1,maxScore);
+        unfakeMove(step);
+        delete step ;
+
+        if(score >= curMinScore){
+            while (steps.count()) {
+                Step * step = steps.back() ;
+                steps.removeLast();
+                delete step ;
+            }
+            return score;
+        }
+        if(score > maxScore){
+            maxScore = score ;
+        }
+
+    }
+    return maxScore;
+}
 
 Step* SingleGame::getBestMove(){
     //computer move
@@ -98,23 +174,27 @@ Step* SingleGame::getBestMove(){
 
     //2.try to move
     int maxScore = std::numeric_limits<int>::min();
-    Step * realstp ;
-    for(QVector<Step*>::const_iterator it = steps.begin() ; it != steps.end(); ++it){
-        Step * step = *it ;
-        fakeMove(step);
+    Step * realstp = NULL;
+    while (steps.count()) {
+        Step * step = steps.back() ;
+        steps.removeLast();
 
-        //3.assess each step
-        int score = calScore();
+        fakeMove(step);
+        int score = this->getMinScore(level-1,maxScore);
         unfakeMove(step);
 
         if(score > maxScore){
             maxScore = score ;
+            if(realstp != NULL) delete realstp;
             realstp = step ;
+        }else{
+            delete step ;
         }
     }
     //get best move step
     return realstp ;
 }
+
 void SingleGame::back(){
     backOne();
     backOne();

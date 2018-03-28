@@ -21,9 +21,11 @@ public:
     void fakeMove(Step *);
     void unfakeMove(Step *);
     int calScore();
+    int getMinScore(int level,int curMaxScore);
+    int getMaxScore(int level,int curMinScore);
 
 private:
-
+    int level ;
 
 signals:
 
