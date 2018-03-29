@@ -20,11 +20,24 @@ NetGame::NetGame(bool isServer,QWidget *parent) : Board(parent){
 
         this->client = new QTcpSocket(this);
         this->client->connectToHost(QHostAddress("127.0.0.1"),8999);
+        //client receive data
+        connect(client, SIGNAL(readyRead()), this, SLOT(slotDataArrive()));
     }
 }
+void NetGame::slotNewConnection()
+{
+    if(client) return;
 
-void NetGame::slotNewConnection(){
-    if(this->client == NULL){
-        this->client = this->server->nextPendingConnection();
-    }
+    client = server->nextPendingConnection();
+    connect(client, SIGNAL(readyRead()), this, SLOT(slotDataArrive()));
+}
+void NetGame::slotDataArrive(){
+
+}
+
+void NetGame::back(){
+
+}
+void NetGame::click(int id, int row, int col){
+
 }
